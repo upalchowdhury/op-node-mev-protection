@@ -1,7 +1,8 @@
-package main
+package node
 
 import (
 	"log"
+	"op-node/eas"
 	"time"
 )
 
@@ -11,11 +12,17 @@ func NewRollupDriver() *RollupDriver {
 	return &RollupDriver{}
 }
 
-func (driver *RollupDriver) Start(seq *Sequencer, ver *Verifier) {
+func (driver *RollupDriver) Start(seq *Sequencer, ver *Verifier, eas *eas.EASManager) {
 	for {
 		// Simulate block creation
 		time.Sleep(5 * time.Second)
-		block := seq.CreateBlock()
+
+		// Attest each transaction in the sequencer
+		for _, tx := range seq.transactions {
+			eas.AttestTransaction(tx.Transaction.ID)
+		}
+
+		block := seq.CreateBlock(eas)
 
 		// Verify block
 		if ver.VerifyBlock(block) {
