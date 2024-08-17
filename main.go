@@ -5,15 +5,16 @@ import (
 	"log"
 	"time"
 
-	"minimal-op-node/eas"
-	"minimal-op-node/node"
+	"op-node/eas"
+	"op-node/node"
+	"op-node/transactions" // Correctly importing the transactions package
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 )
 
 func main() {
-	client, err := ethclient.Dial("https://eth-mainnet.g.alchemy.com/v2/XwJgApR00bxnw_4STcEvXZxSkixPAcDI")
+	client, err := ethclient.Dial("https://mainnet.infura.io/v3/YOUR_INFURA_PROJECT_ID")
 	if err != nil {
 		log.Fatalf("Failed to connect to Ethereum client: %v", err)
 	}
@@ -29,7 +30,7 @@ func main() {
 	go func() {
 		for {
 			time.Sleep(3 * time.Second)
-			tx := node.NewTransaction(fmt.Sprintf("tx-%d", time.Now().Unix()), "data")
+			tx := transactions.NewTransaction(fmt.Sprintf("tx-%d", time.Now().Unix()), "data") // Call from transactions package
 
 			unlockTime := time.Now().Add(10 * time.Second)
 			rollupNode.Sequencer.AddTransaction(tx, unlockTime)
