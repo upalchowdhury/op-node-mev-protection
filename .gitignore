@@ -1,5 +1,5 @@
-./op-node-mev-protection/e2e_with_EAS_contract/broadcast
-./op-node-mev-protection/e2e_with_EAS_contract/cache
-./op-node-mev-protection/e2e_with_EAS_contract/forge-std
-./op-node-mev-protection/e2e_with_EAS_contract/lib
-./op-node-mev-protection/e2e_with_EAS_contract/out
+./e2e_with_EAS_contract/broadcast/*
+./e2e_with_EAS_contract/cache
+./e2e_with_EAS_contract/forge-std
+./e2e_with_EAS_contract/lib
+./e2e_with_EAS_contract/out
