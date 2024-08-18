@@ -17,13 +17,13 @@ Mock EAS Contract: A simple contract deployed on Anvil to simulate transaction a
 Go Rollup Node: Implements the rollup node behavior, including time-locking transactions and verifying them with EAS.
 
 ### Process Flow
-Transaction Simulation:
+- Transaction Simulation:
 
 The node continuously simulates new transactions and applies a time-lock. These transactions are added to the sequencer's transaction pool with a specified unlock time.
-EAS Attestation:
+- EAS Attestation:
 
 Before a transaction can be included in a block, it must be attested to by the EAS contract. The EASManager handles this attestation process.
-Block Creation:
+- Block Creation:
 
 The sequencer creates blocks from transactions that have passed their unlock time and have been successfully attested by the EAS. These blocks are then validated and added to the chain.
 Monitoring:
@@ -48,5 +48,23 @@ The node continuously monitors the creation and validation of blocks and logs im
 
 ### Future Improvements
 - MEV Protection Enhancements: Implement additional MEV protection strategies, such as encrypted transaction pools.
+
 - Optimistic Rollup Features: Expand the functionality to include more features from full optimistic rollup implementations, such as fraud proofs.
+
 - Extended EAS Functionality: Integrate more advanced attestation features from the Ethereum Attestation Service.
+
+- Execution Verification by Sequencer
+The rollup node allows users to query whether a transaction has been executed by the sequencer. This can be verified using a simple query to the node’s execution log.
+
+- Private Data in Attestations
+Attestations can include private data that is encrypted before being attested on-chain. This data can only be accessed by authorized recipients with the correct decryption keys.
+
+- Off-Chain Attestations
+Off-chain attestations differ from simple signatures in that they involve a structured proof process that can be stored off-chain (e.g., IPFS). These attestations are signed with private keys to provide authenticity and integrity, similar to on-chain attestations.
+
+- Merkle Root and Private Data
+When transactions are sequentially processed, the Merkle root is computed at the end of the batch. To maintain the relevance of private data, its hash is committed as part of the transaction data, ensuring that it contributes to the overall batch integrity.
+
+- User Notifications for Attestations
+The node includes an event listener that triggers notifications to users when an attestation is created with them as a recipient. Notifications can be delivered via webhooks, email, or other messaging systems.
+
