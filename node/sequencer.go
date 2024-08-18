@@ -30,7 +30,7 @@ func (seq *Sequencer) AddTransaction(tx *transactions.Transaction, unlockTime ti
 	seq.mu.Lock()
 	defer seq.mu.Unlock()
 
-	log.Printf("Adding time-locked transaction %s to sequencer", tx.ID)
+	log.Printf("Adding time-locked transaction %s to sequencer (UnlockTime: %s)", tx.ID, unlockTime)
 	seq.transactions = append(seq.transactions, &TimeLockedTransaction{
 		Transaction: tx,
 		UnlockTime:  unlockTime,
@@ -55,12 +55,23 @@ func (seq *Sequencer) CreateBlock(eas *eas.EASManager) *transactions.Block {
 
 	// Filter out transactions that are unlocked
 	for _, timeLockedTx := range seq.transactions {
+		log.Printf("Checking transaction %s for block inclusion. UnlockTime: %s, CurrentTime: %s",
+			timeLockedTx.Transaction.ID, timeLockedTx.UnlockTime, now)
+
 		if now.After(timeLockedTx.UnlockTime) && eas.VerifyAttestation(timeLockedTx.Transaction.ID) {
+			log.Printf("Transaction %s is unlocked and valid. Adding to block.", timeLockedTx.Transaction.ID)
 			validTxs = append(validTxs, timeLockedTx.Transaction)
+		} else {
+			log.Printf("Transaction %s is still locked or not valid.", timeLockedTx.Transaction.ID)
 		}
 	}
 
-	log.Printf("Creating new block with %d valid transactions", len(validTxs))
+	if len(validTxs) == 0 {
+		log.Println("No valid transactions for block creation.")
+	} else {
+		log.Printf("Creating new block with %d valid transactions", len(validTxs))
+	}
+
 	block := transactions.NewBlock(validTxs)
 	seq.transactions = []*TimeLockedTransaction{} // Clear processed transactions
 	return block

@@ -14,10 +14,10 @@ func NewRollupDriver() *RollupDriver {
 
 func (driver *RollupDriver) Start(seq *Sequencer, ver *Verifier, eas *eas.EASManager) {
 	for {
-		// Simulate block creation
-		time.Sleep(5 * time.Second)
+		// Simulate a small delay before creating a block to ensure transactions are unlocked
+		time.Sleep(6 * time.Second) // Delay the block creation to allow transactions to unlock
 
-		// Attest each transaction in the sequencer
+		// Attest each transaction in the sequencer (could be done in batch or per tx)
 		for _, tx := range seq.transactions {
 			eas.AttestTransaction(tx.Transaction.ID)
 		}
