@@ -35,19 +35,30 @@ func main() {
 	// Initialize the EAS manager with the deployed contract address
 	easManager := eas.NewEASManager(client, common.HexToAddress(mockEASAddress))
 
-	// Create the rollup node
-	rollupNode := node.NewRollupNode(easManager)
+	// Initialize the Sequencer
+	sequencer := node.NewSequencer()
+
+	// Initialize the RollupDriver with the Sequencer and EASManager
+	rollupDriver := node.NewRollupDriver(sequencer, easManager)
+
+	// Create the RollupNode with the initialized EASManager and RollupDriver
+	rollupNode := node.NewRollupNode(easManager, rollupDriver)
 	rollupNode.Start()
 
 	// Simulate adding time-locked transactions with short unlock times
 	go func() {
 		for {
 			time.Sleep(3 * time.Second)
+
+			// Create a new transaction
 			tx := transactions.NewTransaction(fmt.Sprintf("tx-%d", time.Now().Unix()), "data")
 
-			unlockTime := time.Now().Add(5 * time.Second) // Fast unlock time for testing
-			log.Printf("Simulating transaction with unlock time: %s", unlockTime)
-			rollupNode.Sequencer.AddTransaction(tx, unlockTime)
+			// Simulating the transaction being added to the sequencer
+			log.Printf("Adding transaction: %s", tx.ID)
+			rollupNode.Sequencer.AddTransaction(tx)
+
+			// Log the number of transactions in the sequencer after adding
+			log.Printf("Current transaction pool size: %d", len(rollupNode.Sequencer.GetTransactions()))
 		}
 	}()
 

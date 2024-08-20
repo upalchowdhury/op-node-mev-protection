@@ -13,6 +13,5 @@ func NewVerifier() *Verifier {
 
 func (ver *Verifier) VerifyBlock(block *transactions.Block) bool {
 	log.Printf("Verifying block %s", block.ID)
-	// Simplified verification logic, always returns true
-	return true
+	return true // Simplified verification logic
 }

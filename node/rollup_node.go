@@ -5,6 +5,7 @@ import (
 	"op-node/eas"
 )
 
+// RollupNode coordinates the Sequencer, Verifier, and Driver in the rollup node.
 type RollupNode struct {
 	Sequencer *Sequencer
 	Verifier  *Verifier
@@ -12,16 +13,27 @@ type RollupNode struct {
 	EAS       *eas.EASManager
 }
 
-func NewRollupNode(easManager *eas.EASManager) *RollupNode {
+// NewRollupNode initializes a new RollupNode with the provided EASManager and RollupDriver.
+func NewRollupNode(easManager *eas.EASManager, driver *RollupDriver) *RollupNode {
+	seq := NewSequencer()
+	verifier := NewVerifier()
+
 	return &RollupNode{
-		Sequencer: NewSequencer(),
-		Verifier:  NewVerifier(),
-		Driver:    NewRollupDriver(),
+		Sequencer: seq,
+		Verifier:  verifier,
+		Driver:    driver, // Already initialized RollupDriver
 		EAS:       easManager,
 	}
 }
 
+// Start begins running the RollupNode by starting the RollupDriver.
 func (node *RollupNode) Start() {
 	log.Println("Starting Rollup Node...")
-	go node.Driver.Start(node.Sequencer, node.Verifier, node.EAS)
+	go node.Driver.Run()
+}
+
+// Stop gracefully shuts down the RollupNode.
+func (node *RollupNode) Stop() {
+	log.Println("Stopping Rollup Node...")
+	node.Driver.Stop()
 }
